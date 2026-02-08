@@ -73,63 +73,33 @@ navigator.geolocation.getCurrentPosition(async pos => {
   // 🔎 Cari Rumah Sakit Sekitar
   // =========================
 
-  const query = `
+  async function cariRS(lat, lon) {
+
+const query = `
 [out:json];
 (
-...
+ node["amenity"="hospital"](around:5000,${lat},${lon});
+ way["amenity"="hospital"](around:5000,${lat},${lon});
+);
+out center;
 `;
-    node["amenity"="hospital"](around:5000,${lat},${lon});
-    way["amenity"="hospital"](around:5000,${lat},${lon});
-  );
-  out center;
-  `;
 
-  const url = "https://overpass-api.de/api/interpreter?data=" + encodeURIComponent(query);
+const url = "https://overpass-api.de/api/interpreter?data=" + encodeURIComponent(query);
 
-  async function cariRS(lat, lon) {
-  } 
+const res = await fetch(url);
+const data = await res.json();
 
-  let nearest = null;
-  let nearestDist = 999999;
+data.elements.forEach(el => {
 
-  data.elements.forEach(el => {
+let hLat = el.lat || el.center?.lat;
+let hLon = el.lon || el.center?.lon;
 
-    let hLat = el.lat || el.center?.lat;
-    let hLon = el.lon || el.center?.lon;
+if (!hLat || !hLon) return;
 
-    if (!hLat || !hLon) return;
-
-    // Hitung jarak sederhana
-    const dist = Math.sqrt(
-      Math.pow(lat - hLat, 2) +
-      Math.pow(lon - hLon, 2)
-    );
-
-    if (dist < nearestDist) {
-      nearestDist = dist;
-      nearest = el;
-    }
-
-    // Marker semua RS
-    L.marker([hLat, hLon])
-      .addTo(map)
-      .bindPopup(el.tags?.name || "Rumah Sakit");
-
-  });
-
-  // Highlight RS Terdekat
-  if (nearest) {
-    const nLat = nearest.lat || nearest.center.lat;
-    const nLon = nearest.lon || nearest.center.lon;
-
-    L.circle([nLat, nLon], {
-      radius: 200,
-      color: "red"
-    }).addTo(map);
-
-    alert("RS Terdekat: " + (nearest.tags?.name || "Tidak diketahui"));
-  }
+L.marker([hLat, hLon])
+.addTo(map)
+.bindPopup(el.tags?.name || "Rumah Sakit");
 
 });
 
-</script>
+  }
