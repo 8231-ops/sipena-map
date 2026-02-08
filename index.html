@@ -84,8 +84,8 @@ navigator.geolocation.getCurrentPosition(async pos => {
 
   const url = "https://overpass-api.de/api/interpreter?data=" + encodeURIComponent(query);
 
-  const res = await fetch(url);
-  const data = await res.json();
+  async function cariRS(lat, lon) {
+  } 
 
   let nearest = null;
   let nearestDist = 999999;
