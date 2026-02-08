@@ -1,1 +1,52 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Sipena Map</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
+    <!-- Leaflet CSS -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css"/>
+
+    <style>
+        body {
+            margin: 0;
+        }
+        #map {
+            height: 100vh;
+        }
+    </style>
+</head>
+<body>
+
+<div id="map"></div>
+
+<!-- Leaflet JS -->
+<script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+
+<script>
+    // Buat map
+    var map = L.map('map').setView([-8.65, 115.22], 13); // Bali default
+
+    // Tile map
+    L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        maxZoom: 19
+    }).addTo(map);
+
+    // Ambil lokasi user
+    if (navigator.geolocation) {
+        navigator.geolocation.getCurrentPosition(function(position) {
+            var lat = position.coords.latitude;
+            var lon = position.coords.longitude;
+
+            map.setView([lat, lon], 15);
+
+            L.marker([lat, lon])
+                .addTo(map)
+                .bindPopup("Lokasi Kamu")
+                .openPopup();
+        });
+    }
+</script>
+
+</body>
+</html>
